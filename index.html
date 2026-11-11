@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>Quicktime Rush: 1v1 streetball</title>
+<meta name="description" content="1v1 streetball in your browser. First to 11, make it take it. Break ankles, beat the daily boss, send the clip.">
+<meta property="og:title" content="Quicktime Rush">
+<meta property="og:description" content="1v1 streetball. First to 11. Beat today's boss.">
+<meta name="theme-color" content="#0e0f13">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23f07a1c' stroke='%230e0f13' stroke-width='3'/%3E%3Cpath d='M2 16h28M16 2v28' stroke='%230e0f13' stroke-width='2.5'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="./vendor/fonts/fonts.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="ctl-simple">
+<canvas id="c"></canvas>
+<div id="bars"><i></i><i></i></div>
+<div id="skip">Tap or press Space to skip</div>
+
+<div id="hud" hidden>
+  <div id="score" data-poss="0">
+    <div class="side you"><span class="lbl" id="youName">YOU</span><span id="s0" class="num">0</span></div>
+    <div class="mid"><span id="to">TO 11</span></div>
+    <div class="side cpu"><span id="s1" class="num">0</span><span class="lbl" id="cpuName">CPU</span></div>
+  </div>
+  <button id="pauseBtn" aria-label="Pause">II</button>
+  <div id="hype"><span>HYPE</span><div class="bar"><i></i></div></div>
+  <div id="stam"><i></i></div>
+  <div id="clear">Take it back behind the arc</div>
+  <div id="coach" hidden></div>
+  <div id="touch" hidden>
+    <div id="stick"><div id="knob"></div></div>
+    <button id="bAct">MOVE</button>
+    <button id="bShoot">SHOOT</button>
+  </div>
+</div>
+<div id="meter" class="meter" hidden><div class="good"></div><div class="perfect"></div><div class="fill"></div></div>
+<div id="meter1" class="meter" hidden><div class="good"></div><div class="perfect"></div><div class="fill"></div></div>
+<div id="tag0" class="tag"></div><div id="tag1" class="tag"></div>
+<div id="reach"></div>
+<div id="banner"></div>
+
+<section id="menu" class="screen" hidden>
+  <button id="mute" class="icon" aria-label="Sound on or off">Sound on</button>
+  <div class="brand">
+    <h1><span>QUICKTIME</span><br>RUSH</h1>
+    <p class="rules">1 on 1. First to 11. Make it, take it.</p>
+    <p id="career" class="fine"></p>
+    <div id="qr" class="kb-only"><div id="qrCode" hidden></div><span>Scan to play<br>on your phone</span></div>
+  </div>
+  <div class="sign">
+    <div id="challenge" class="block chal" hidden>
+      <p id="chalText"></p>
+      <button id="playChal" class="big">Take the challenge</button>
+    </div>
+    <div class="block">
+      <div class="seg" role="group" aria-label="Difficulty">
+        <button data-diff="rookie">Rookie</button><button data-diff="pro">Pro</button><button data-diff="legend">Legend</button>
+      </div>
+      <button id="play" class="big">Play</button>
+    </div>
+    <div class="block daily">
+      <div class="boss">
+        <span class="when">Today's boss, #<span id="dn"></span></span>
+        <b id="bossName"></b>
+        <div id="bossTraits" class="chips"></div>
+      </div>
+      <button id="playDaily" class="big alt">Run it</button>
+      <div id="dailyRes" class="fine"></div>
+    </div>
+    <div class="block opts">
+      <div class="optrow kb-only">
+        <span class="optlbl">Controls</span>
+        <div class="seg small" role="group" aria-label="Controls">
+          <button data-ctl="simple">Simple</button><button data-ctl="pro">Advanced</button>
+        </div>
+      </div>
+      <p id="ctlHint" class="fine kb-only"></p>
+      <div class="optrow">
+        <span class="optlbl">Your player</span>
+        <div class="locker">
+          <button data-look="hair" aria-label="Change hair"></button>
+          <button data-look="skin" aria-label="Change skin tone"></button>
+          <button data-look="kit" aria-label="Change jersey"></button>
+        </div>
+      </div>
+      <div class="foot">
+        <button id="how" class="link">How to play</button>
+        <button id="play2" class="link kb-only">2 players, one keyboard</button>
+        <button id="playOnline" class="link">Play a friend online</button>
+        <button id="openFb" class="link">Send feedback</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="howto" class="screen dim" hidden>
+  <div class="sign narrow">
+    <h2>How to play</h2>
+    <table class="simple-only">
+      <tr><th>Move</th><td><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></td></tr>
+      <tr><th>Shoot</th><td>Hold <kbd>L</kbd> or <kbd>Space</kbd>, let go in the green. A quick tap is a pump fake.</td></tr>
+      <tr><th>Tech</th><td><kbd>K</kbd> with the ball dashes the way you are moving: toward the rim is a burst, away is a stepback, sideways (or standing still) is a crossover.<br><kbd>K</kbd> on defense dashes the way you are moving. When the ball has a yellow ring on it, <kbd>K</kbd> steals instead.</td></tr>
+      <tr><th>Block</th><td><kbd>L</kbd> or <kbd>Space</kbd> on defense jumps to contest.</td></tr>
+      <tr><th>Pause</th><td><kbd>Esc</kbd></td></tr>
+    </table>
+    <table class="pro-only">
+      <tr><th>Move</th><td><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>, hold <kbd>Shift</kbd> to sprint</td></tr>
+      <tr><th>Shoot</th><td>Hold <kbd>Space</kbd>, let go in the green. A quick tap is a pump fake.</td></tr>
+      <tr><th>Moves</th><td><kbd>J</kbd> cross left, <kbd>L</kbd> cross right, <kbd>K</kbd> stepback, <kbd>I</kbd> drive (spin if sprinting). Chain two fast for a combo.</td></tr>
+      <tr><th>Defense</th><td>While you are between your man and the rim, guess his move: <kbd>J</kbd> left, <kbd>L</kbd> right, <kbd>I</kbd> drive, <kbd>K</kbd> steal (also reads stepbacks). Guess right and you read it for an easy steal. Guess the opposite way and you get crossed.<br>Beaten? Any of those keys dashes you back in front. <kbd>Space</kbd> jumps to contest.</td></tr>
+      <tr><th>Pause</th><td><kbd>Esc</kbd> or <kbd>P</kbd></td></tr>
+    </table>
+    <ul>
+      <li>Inside the arc is 1, behind it is 2. Score and you keep the ball.</li>
+      <li>Only the defense can grab a miss. After a steal or rebound, take it behind the arc before you shoot.</li>
+      <li><b>Steals are reach, not luck.</b> Get close on the side he is dribbling and reach when the ball is marked. Reach from too far, or across his body, and you whiff and get beat.</li>
+      <li><b>Protect the ball.</b> Dribbling or sprinting into a defender puts it in his hands. Cross over to the far side when he sits on it.</li>
+      <li><b>Ankles:</b> get him moving one way, then go back the other. Catch him leaning and he goes down.</li>
+      <li><b>Blocks are timing.</b> Be near the top of your jump when he lets it go.</li>
+      <li>A clean green always goes in. A hand in your face shrinks the green.</li>
+      <li>Hit 3 in a row and you are <b>on fire</b>. Fill the hype bar for 10 seconds of <b>takeover</b>.</li>
+      <li>Close to the rim with a good release and nobody in front: dunk.</li>
+    </ul>
+    <button id="howBack" class="big">Got it</button>
+  </div>
+</section>
+
+<section id="online" class="screen dim" hidden>
+  <div class="sign narrow">
+    <h2>Play a friend</h2>
+    <p id="onStatus" class="status" role="status"></p>
+    <div id="onHost" class="block" hidden>
+      <div class="coderow"><div id="onCode" aria-label="Your room code"></div><div id="onQR" hidden></div></div>
+      <button id="onCopy" class="big">Copy invite link</button>
+      <p class="fine">Send the link. The game starts the moment your friend opens it.</p>
+    </div>
+    <div class="block">
+      <label class="fine" for="onInput">Got a code from a friend?</label>
+      <div class="joinrow"><input id="onInput" maxlength="4" placeholder="CODE" autocomplete="off" autocapitalize="characters" spellcheck="false"><button id="onJoin" class="big alt">Join</button></div>
+    </div>
+    <p class="fine">The game runs directly between your two devices, so it works best on the same continent. Some school networks block this. If it will not connect, try another network.</p>
+    <button id="onBack" class="link">Back to menu</button>
+  </div>
+</section>
+
+<section id="feedback" class="screen dim" hidden>
+  <div class="sign narrow">
+    <h2>Tell me straight</h2>
+    <p class="fine">What is broken, boring or missing? It goes straight to the person who made this. No name needed.</p>
+    <div class="seg" role="group" aria-label="How is the game">
+      <button data-mood="Fire">It's fire</button><button data-mood="Mid">It's mid</button><button data-mood="Broken">It's broken</button>
+    </div>
+    <textarea id="fbText" maxlength="600" rows="5" placeholder="Say what you'd change. Be as harsh as you want." aria-label="Your feedback"></textarea>
+    <p id="fbStatus" class="status" role="status"></p>
+    <button id="fbSend" class="big">Send it</button>
+    <button id="fbBack" class="link">Back</button>
+  </div>
+</section>
+
+<section id="pause" class="screen dim" hidden>
+  <div class="sign narrow">
+    <h2>Paused</h2>
+    <button id="resume" class="big">Resume</button>
+    <button id="pHow" class="big ghost">How to play</button>
+    <button id="quit" class="big ghost">Quit to menu</button>
+  </div>
+</section>
+
+<section id="over" class="screen dim" hidden>
+  <div class="sign narrow">
+    <div class="fine" id="ovSub"></div>
+    <h2 id="ovTitle"></h2>
+    <div id="ovScore"></div>
+    <div id="ovChal" hidden></div>
+    <div id="ovShots"></div>
+    <div id="ovStats"></div>
+    <div class="row"><button id="ovAgain" class="big">Rematch</button><button id="ovShare" class="big alt">Challenge a friend</button></div>
+    <button id="ovClip" class="big ghost" hidden>Save your best clip</button>
+    <div class="foot center"><button id="ovMenu" class="link">Back to menu</button><button id="ovFb" class="link">Send feedback</button></div>
+    <div id="ovCareer" class="fine"></div>
+  </div>
+</section>
+
+<script type="importmap">{ "imports": { "three": "./vendor/three.module.min.js" } }</script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
